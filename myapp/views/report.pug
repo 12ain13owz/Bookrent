@@ -1,0 +1,375 @@
+extends layout
+block content
+  div.row
+    a(id="download" href="" download)
+    div(style="margin-top: 15px").col-xs-2
+      button(type="button" data-toggle="modal" data-target="#reportex" style="font-weight: bold;").btn.btn-success 
+        i.ic.fas.fa-file-excel 
+        |Report Excel
+  div.heading
+    div.icon-head
+      i.far.fa-chart-bar
+    span(id="reportday") รายงานประจำวัน
+    button(type="button" data-toggle="collapse" data-target="#collapse1" style="padding: 12px;").btn-accordion.coll
+      i.ic.glyphicon.glyphicon-chevron-down
+
+  #collapse1.row.collapse.in
+    div.container
+      ul.nav.nav-tabs
+        li.active
+          a(data-toggle="tab" href="#rentday") เช่าหนังสือ
+        li
+          a(data-toggle="tab" href="#regisday") ผู้สมัครสมาชิก
+
+      div.tab-content
+        #rentday.tab-pane.fade.in.active
+          div(style="margin-top: 15px;").row
+            div.col-md-12
+              div.panel.panel-warning
+                div.panel-heading เช่าหนังสือ
+                div.panel-body
+                  table(id="trentday" style="width: 100%").table.table-striped.table-bordered
+                    thead
+                      tr
+                        th ลำดับ
+                        th ชื่อหนังสือ
+                        th ผู้เช่า
+                        th ค่าเช่า
+                        th สถานะ
+                    tbody
+                      - var i = 1
+                      each rentday in data.rentday
+                        tr
+                          td= i++
+                          td= rentday.namebook + ' ' + rentday.vol
+                          td= rentday.fullname
+                          td= rentday.lend
+                          td= rentday.status
+                    tfoot
+                      tr
+                        th(colspan="4" style="text-align:right") Total:
+                        th
+
+        #regisday.tab-pane.fade
+          div(style="margin-top: 15px;").row
+            div.col-md-12
+              div.panel.panel-primary
+                div.panel-heading ผู้สมัครสมาชิก
+                div.panel-body
+                  table(id="tregisday" style="width: 100%").table.table-striped.table-bordered
+                    thead
+                      tr
+                        th ลำดับ
+                        th ชื่อผู้สมัคร
+                        th รหัสบัตรประชาชน
+                        th เบอร์โทรศัพท์
+                        th เพศ
+                    tbody
+                      - var j = 1
+                        each regisday in data.regisday
+                          tr
+                            td= j++
+                            td= regisday.fullname
+                            td= regisday.idcard
+                            td= regisday.mobiletel
+                            td= regisday.sex
+  div.heading
+    div.icon-head
+      i.far.fa-chart-bar
+    span(id="reportmonth") รายงานประจำเดือน
+    button(type="button" data-toggle="collapse" data-target="#collapse2" style="padding: 12px;").btn-accordion.coll
+      i.ic.glyphicon.glyphicon-chevron-down
+  #collapse2.row.collapse.in
+    div.container
+      ul.nav.nav-tabs
+        li.active
+          a(data-toggle="tab" href="#rentmonth") เช่าหนังสือ
+        li
+          a(data-toggle="tab" href="#regismonth") ผู้สมัครสมาชิก
+
+      div.tab-content
+        #rentmonth.tab-pane.fade.in.active
+          div(style="margin-top: 15px;").row
+            div.col-md-12
+              div.panel.panel-warning
+                div.panel-heading เช่าหนังสือ
+                div.panel-body
+                  table(id="trentmonth" style="width: 100%").table.table-striped.table-bordered
+                    thead
+                      tr
+                        th ลำดับ
+                        th ชื่อหนังสือ
+                        th ผู้เช่า
+                        th ค่าเช่า
+                        th สถานะ
+                    tbody
+                      - var i = 1
+                      each rentmonth in data.rentmonth
+                        tr
+                          td= i++
+                          td= rentmonth.namebook + ' ' + rentmonth.vol
+                          td= rentmonth.fullname
+                          td= rentmonth.lend
+                          td= rentmonth.status
+                    tfoot
+                      tr
+                        th(colspan="4" style="text-align:right") Total:
+                        th
+
+        #regismonth.tab-pane.fade
+          div(style="margin-top: 15px;").row
+            div.col-md-12
+              div.panel.panel-primary
+                div.panel-heading ผู้สมัครสมาชิก
+                div.panel-body
+                  table(id="tregismonth" style="width: 100%").table.table-striped.table-bordered
+                    thead
+                      tr
+                        th ลำดับ
+                        th ชื่อผู้สมัคร
+                        th รหัสบัตรประชาชน
+                        th เบอร์โทรศัพท์
+                        th เพศ
+                    tbody
+                      - var j = 1
+                        each regismonth in data.regismonth
+                          tr
+                            td= j++
+                            td= regismonth.fullname
+                            td= regismonth.idcard
+                            td= regismonth.mobiletel
+                            td= regismonth.sex
+
+  #reportex(tabindex="-1" role="dialog").modal.fade
+    div(role="document").modal-dialog.modal-lg
+      div.modal-content
+        div.modal-header
+          button(type="button" data-dismiss="modal" aria-label="Close").close
+            span(aria-hidden="true") &times;
+          h4.modal-title Report
+        div.modal-body
+          div.panel.panel-primary
+            div.panel-body
+              form(id="report").form-horizontal
+                div.form-group
+                  label(for="from").col-xs-2.col-md-3.control-label From :
+                  div.fg.col-xs-12.col-md-3
+                    input(type="text" id="from" name="from" placeholder="From").form-control
+
+                  label(for="to").col-xs-2.col-md-1.control-label To :
+                  div.col-xs-12.col-md-3
+                    input(type="text" id="to" name="to" placeholder="To").form-control
+
+                button(type="button" id="btnreport" name="btnreport").btn.btn-success.col-md-offset-6 Submit
+
+  script.
+    $(() => {
+      /*
+      let month = UrlParameter('month')
+      if (month == undefined) {
+        month = new Date()
+        $('#month').val(month.getMonth() + 1)
+      } else $('#month').val(month)
+      */
+      
+      let btn = new btnprocess('btnreport')
+      let now = new Date()
+      let month = ['January','February','March','Apil','May','June','July',
+        'August','September','Octorber','November','Dezember'
+      ]
+
+      let dd = '' + now.getDate()
+      let mm = '' + (now.getMonth() + 1)
+      let yy = now.getFullYear()
+
+      if (dd.length < 2) dd = '0' + dd;
+      if (mm.length < 2) mm = '0' + mm;
+
+      let dmy = dd + '/' + mm + '/' + yy
+
+      $('#reportday').text('รายงานประจำวัน ' + dmy)
+      $('#reportmonth').text('รายงานประจำเดือน ' + month[Number(mm)])
+
+      $('button').click((e) => {
+        let $this = $(e.currentTarget)
+        let hclass = $this.hasClass('coll')
+                     
+        if (hclass) $this.removeClass('coll')
+        else $this.addClass('coll')                
+      })
+
+      $('#trentday').DataTable({
+        order: [[0, 'asc']],
+        aLengthMenu: [
+          [10, -1],
+          [10, "All"]
+        ],
+        iDisplayLength: 10,
+        
+        "footerCallback": function ( row, data, start, end, display ) {
+          var api = this.api(), data;
+
+          // Remove the formatting to get integer data for summation
+          var intVal = function ( i ) {
+              return typeof i === 'string' ?
+                  i.replace(/[\$,]/g, '')*1 :
+                  typeof i === 'number' ?
+                      i : 0;
+          };
+ 
+          // Total over all pages
+          total = api
+              .column( 3 )
+              .data()
+              .reduce( function (a, b) {
+                  return intVal(a) + intVal(b);
+              }, 0 );
+
+          // Total over this page
+          pageTotal = api
+              .column( 3, { page: 'current'} )
+              .data()
+              .reduce( function (a, b) {
+                  return intVal(a) + intVal(b);
+              }, 0 );
+
+          // Update footer
+          $( api.column( 4 ).footer() ).html(
+            pageTotal + ' (' + total + ' total)'
+          );
+        }
+      })
+
+      $('#tregisday').DataTable({
+        order: [[0, 'asc']],
+        aLengthMenu: [
+          [10, -1],
+          [10, "All"]
+        ],
+        iDisplayLength: 10
+      })
+
+      $('#trentmonth').DataTable({
+        order: [[0, 'asc']],
+        aLengthMenu: [
+          [10, -1],
+          [10, "All"]
+        ],
+        iDisplayLength: 10,
+        
+        "footerCallback": function ( row, data, start, end, display ) {
+          var api = this.api(), data;
+
+          // Remove the formatting to get integer data for summation
+          var intVal = function ( i ) {
+              return typeof i === 'string' ?
+                  i.replace(/[\$,]/g, '')*1 :
+                  typeof i === 'number' ?
+                      i : 0;
+          };
+ 
+          // Total over all pages
+          total = api
+              .column( 3 )
+              .data()
+              .reduce( function (a, b) {
+                  return intVal(a) + intVal(b);
+              }, 0 );
+
+          // Total over this page
+          pageTotal = api
+              .column( 3, { page: 'current'} )
+              .data()
+              .reduce( function (a, b) {
+                  return intVal(a) + intVal(b);
+              }, 0 );
+
+          // Update footer
+          $( api.column( 4 ).footer() ).html(
+            pageTotal + ' (' + total + ' total)'
+          );
+        }
+      })
+
+      $('#tregismonth').DataTable({
+        order: [[0, 'asc']],
+        aLengthMenu: [
+          [10, -1],
+          [10, "All"]
+        ],
+        iDisplayLength: 10
+      })
+
+      $(function() {
+        var dateFormat = "dd/mm/yy",
+          from = $( "#from" )
+            .datepicker({
+              defaultDate: "+1w",
+              changeMonth: true,
+              numberOfMonths: 1
+            })
+            .on( "change", function() {
+              to.datepicker( "option", "minDate", getDate( this ) );
+            }),
+          to = $( "#to" ).datepicker({
+            defaultDate: "+1w",
+            changeMonth: true,
+            numberOfMonths: 1
+          })
+          .on( "change", function() {
+            from.datepicker( "option", "maxDate", getDate( this ) );
+          });
+    
+        function getDate( element ) {
+          var date;
+          try {
+            date = $.datepicker.parseDate( dateFormat, element.value );
+          } catch( error ) {
+            date = null;
+          }
+    
+          return date;
+        }
+      })
+
+      $("#from").datepicker({ dateFormat: 'dd/mm/yy' })
+      $("#to").datepicker({ dateFormat: 'dd/mm/yy' })
+
+      $('#btnreport').click(() => {
+        let from = $("#from").val()
+        let to = $("#to").val()
+        from = from.split('/')
+        to = to.split('/')
+
+        from = new Date(from[2], (from[1] - 1), from[0])
+        to = new Date(to[2], (to[1] - 1), to[0])
+
+        if (from == 'Invalid Date' || to == 'Invalid Date') return
+        else {
+          $.ajax({
+            url: '/report',
+            type: 'post',
+            data: { 
+              from: from,
+              to: to
+            },
+            dataType: 'json',
+            cache: false,
+            timeout: 5000,
+             beforeSend: () => {
+              btn.loading('Processing...')              
+            },
+            success: (result) => {
+              $('#download').prop('href', result.msg)
+              document.getElementById('download').click()
+            },
+            error: (result) => {
+              btn.reset()
+            },
+            complete: () => {
+              btn.reset()
+            }
+          })
+        }
+      })
+    })

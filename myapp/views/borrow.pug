@@ -1,0 +1,600 @@
+extends layout
+
+block content
+  div.form-horizontal
+    div.form-group
+      div.col-md-12
+        h3 Search Customer
+        div.inner-addon.right-addon
+          i.glyphicon.glyphicon-search
+          input(type="text" id="searchcus" name="searchcus" onkeyup="Searchent(event)" autofocus).form-control
+
+    div.form-group
+      div.col-md-12
+        div(id="searchst" role="alert" style="display: none").alert.alert-danger
+
+  div(id="content" style="display: none;")
+    #profile
+      div.row
+        div.col-sm-4
+          div.well
+            p รหัส : 
+              span(id="idshow" style="color:blue")
+            p ชื่อ - สกุล : 
+              span(id="fullnameshow" style="color:blue")
+
+            button(type="button" id="calc" name="calc" data-toggle="modal" data-target="#cart").btn.btn-success
+              i.ic.glyphicon.glyphicon-shopping-cart
+              |ตะกร้า 
+              span.badge 0
+
+    ul.nav.nav-tabs
+      li.active
+        a(data-toggle="tab" href="#hire") เช่าหนังสือ
+      li
+        a(data-toggle="tab" href="#lend") คืนหนังสือ
+
+    div.tab-content
+      #hire.tab-pane.fade.in.active
+        div.form-horizontal
+          div.form-group
+            div.col-md-12
+              h3 Search Book
+              div.inner-addon.right-addon
+                i.glyphicon.glyphicon-search
+                input(type="text" id="searchbook" name="searchbook" onkeyup="SearchB(event)").form-control
+
+          div.form-group
+            div.col-md-12
+              div(id="searchbk" role="alert" style="display: none").alert.alert-danger
+
+        #formbook(style="margin-top: 15px; display: none;")
+          div.row
+            div.col-md-5.col-md-offset-2
+              div.thumbnail
+                img(id ="imageshow" alt="Image" src="/images/no-image.png" style="width: 100%; height: 350px").img-responsive
+
+            div.col-sm-4
+              div.well
+                p รหัส : 
+                  span(id="idbookshow" style="color:blue")
+              div.well
+                p ชื่อหนังสือ : 
+                  span(id="namebookshow" style="color:blue")
+                p ผู้เขียน : 
+                  span(id="authorshow" style="color:blue")
+                p สำนักพิมพ์ : 
+                  span(id="publishershow" style="color:blue")
+                p เล่มล่าสุด : 
+                  span(id="volshow" style="color:blue")
+
+          div.row
+            div.col-md-12
+              div.panel.panel-warning
+                div.panel-heading List หนังสือ
+                div.panel-body
+                  table(style="width: 100%").table.table-striped.table-bordered
+                    thead
+                      tr
+                        th เล่มที่
+                        th ชื่อหนังสือ
+                        th ราคา (บาท)
+                        th ค่าเช่า (บาท)
+                        th จำนวน
+                        th ลงตะกร้า
+                    tbody(id="listbook").tb-middle
+                div.panel.footer.text-center
+                  button(type="button" id="top" name="tob" style="padding-right: 25px; padding-left: 25px;").btn.btn-primary 
+                    h4
+                      i.ic.fas.fa-arrow-up
+                      |Top
+
+      #lend.tab-pane.fade
+        div(style="margin-top: 15px;").row
+          div.col-md-12
+            div.panel.panel-info
+              div.panel-heading คืนหนังสือ
+              div.panel-body
+                table(style="width: 100%").table.table-striped.table-bordered
+                  thead
+                    tr
+                      th No.
+                      th ชื่อหนังสือ
+                      th เล่มที่
+                      th วันที่ยืม
+                      th วันที่คืน
+                      th ค่าปรับ
+                      th
+                        input(type="checkbox" id="lendall" style="margin-right: 4px;")
+                        label(for="lendall" style="margin: 0;") ทั้งหมด
+                  tbody(id="returnbook").tb-middle
+
+                div.form-group
+                  div(id="rebookst" role="alert" style="display: none").alert.alert-danger
+                button(type="button" id="rebook" name="rebook").btn.btn-success.pull-right คืนหนังสือ
+
+  #cart(tabindex="-1" role="dialog").modal.fade
+    div(role="document").modal-dialog.modal-lg
+      div.modal-content
+        div.modal-header
+          button(type="button" data-dismiss="modal" aria-label="Close").close
+            span(aria-hidden="true") &times;
+          h4.modal-title ตะกร้า
+        div.modal-body
+          div.panel.panel-default
+            div.panel-body
+              form(id="cartbook").form-horizontal
+                table(style="width: 100%").table.table-striped.table-bordered
+                    thead
+                      tr
+                        th No.
+                        th ชื่อหนังสือ
+                        th ค่าเช่า (บาท)
+                        th(style="font-size: 16px").text-center
+                          i.far.fa-trash-alt
+                    tbody(id="cartlist").tb-middle
+
+                div.form-group
+                  div.col-md-12
+                    div(id="cartst" role="alert" style="display: none").alert.alert-danger
+
+                div.form-group
+                  div.col-md-12
+                    button(type="button" id="btncart" name="btncart").btn.btn-success.pull-right
+                      span Submit
+
+  script.
+    let rent = []
+    const customer = {
+        data: !{data},
+        getValue: 'name',
+        list: {
+          maxNumberOfElements: 20,
+          match: { enabled: true }
+        }
+      }
+    $('#searchcus').easyAutocomplete(customer)
+
+    $.getJSON('/jsons/searchbook.json', function(rows) {
+      let searchbook = {
+        data: rows,
+        getValue: 'name',
+        list: {
+          maxNumberOfElements: 20,
+          match: { enabled: true },
+          onChooseEvent: () => { $('#searchbook').focus() }
+        }
+      }
+      $("#searchbook").easyAutocomplete(searchbook)
+      $('#searchbook').focus()
+    })
+
+    const formatDate = (date, separate) => {
+        let d = new Date(date),
+            year = d.getFullYear(),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate();
+
+        if (month.length < 2) month = '0' + month;
+        if (day.length < 2) day = '0' + day;
+
+        return [day, month, year].join(separate);
+    }
+
+    const CalcDate = (date) => {
+      let now = new Date()
+      let ledate = new Date(date)
+      let cal = now.getDate() - ledate.getDate()
+
+      if (cal < 0) cal = 0
+      return cal
+    }
+
+    const Searchent = (e) => {
+      if (e.which == 13) Search()
+    }
+
+    const Search = () => {
+      let $this = $('#searchcus')
+
+      if ($this.val().trim() == '') return
+      else {
+        $.ajax({
+          url: '/searchcustomer',
+          type: 'post',
+          data: { searchcus: $('#searchcus').val()},
+          datatype: 'json',
+          cache: false,
+          timeout: 5000,
+          beforeSend: () => {
+            $this.addClass('loading')
+            $('#content').fadeOut(100)
+            if ($('#searchst').css('display') == 'block') $('#searchst').toggle('blind', 10)
+          },
+          success: (result) => {
+            rent = []
+            $('.badge').text(0)
+            $('#rebookst').removeClass('alert-danger alert-success')
+            if ($('#rebookst').css('display') == 'block') $('#rebookst').toggle('blind', 10)
+
+            $('#content').fadeIn(100)
+            $('#idshow').text(result.data.id)
+            $('#fullnameshow').text(result.data.fullname)
+            $('#searchbook').val('')
+            $('#searchbook').focus()
+
+            $('#returnbook tr').slice(0).remove()
+            $.each(result.listrent, function(i, item) {
+              let ledate = formatDate(new Date(item.ledate), '/')
+              let redate = formatDate(new Date(item.redate), '/')
+              let rangedate = CalcDate(item.redate)
+              let lend = item.lend * rangedate
+              $('#returnbook').append('<tr id="lend' + item.vol + '">')
+
+              $('#returnbook tr:last').append('<td>' + (i + 1))
+              $('#returnbook tr:last').append('<td>' + item.namebook)
+              $('#returnbook tr:last').append('<td>' + item.vol)
+              $('#returnbook tr:last').append('<td>' + ledate)
+              $('#returnbook tr:last').append('<td>' + redate)
+              $('#returnbook tr:last').append('<td style="text-align: right;">' + lend)
+              $('#returnbook tr:last').append('<td><input type="checkbox" onclick="calclend()" value="' + lend + '"></td>')
+            })
+
+            $('#returnbook').append('<tr style="font-weight: bold;" class="warning">')
+            $('#returnbook tr:last').append('<td>Total')
+            $('#returnbook tr:last').append('<td colspan="5" id="totallend" style="text-align: right;">0')
+            $('#returnbook tr:last').append('<td>')
+          },
+          error: (result) => {
+            if ($('#searchst').css('display') == 'none') $('#searchst').toggle('blind', 50)
+            $('#searchst').text(result.responseJSON.msg)
+          },
+          complete: () => {
+            $('#formbook').fadeOut(100)
+            if ($('#status').css('display') == 'block') $('#status').toggle('blind', 50)
+            $this.removeClass('loading')
+          }
+        })
+      }      
+    }
+
+    const SearchB = (e) => {
+      if (e.which == 13) SearchBK()
+    }
+
+    const SearchBK = () => {
+      let $this = $('#searchbook')
+      if ($this.val().trim() == '') return
+      else {
+        $.ajax({
+          url: '/searchallbook',
+          type: 'get',
+          data: { searchbook: $('#searchbook').val(), id: $('#idshow').text() },
+          datatype: 'json',
+          cache: false,
+          timeout: 5000,
+          beforeSend: () => {
+            $this.addClass('loading')
+            $('#formbook').fadeOut(100)
+            if ($('#searchbk').css('display') == 'block') $('#searchbk').toggle('blind', 10)
+          },
+          success: (result) => {
+            let lend;
+
+            if ($('#formbook').css('display') == 'none') $('#formbook').show(100)
+            $('#formbook').fadeIn(100)
+            $('#idbookshow').text(result.data.id)
+            $('#namebookshow').text(result.data.namebook)
+            $('#authorshow').text(result.data.author)
+            $('#publishershow').text(result.data.publisher)
+            $('#volshow').text(result.data.vol)
+            $('#imageshow').prop('src', result.data.pathimg)
+            $('#listbook tr').slice(0).remove()
+
+            $.each(result.allbook, function(i, item) {
+              lend = Math.floor(item.price / 10)
+              $('#listbook').append('<tr id="' + item.vol + '">')
+
+              $.each(rent, function(v, list) {
+                if (list.vol == item.vol && list.namebook == item.namebook) {
+                  item.stock--
+                  $('#listbook tr:last').addClass('success')
+                  return
+                }
+              })
+
+              $('#listbook tr:last').append('<td>' + item.vol)
+              $('#listbook tr:last').append('<td>' + item.namebook)
+              $('#listbook tr:last').append('<td>' + item.price)
+              $('#listbook tr:last').append('<td>' + lend)
+              $('#listbook tr:last').append('<td>' + item.stock)
+              $('#listbook tr:last')
+                .append('<td class="td-center"><button type="button" class="btn btn-warning" value="vol=' 
+                + item.vol + '&lend=' + lend + '&stock=' + item.stock + '&rentcount=' + item.rentcount + '" onclick="lendbook(event)">'
+                + '<i class="glyphicon glyphicon-shopping-cart"></i></button></td>')
+
+              if (item.stock <= 0) $('#listbook tr:last td:last button').prop('disabled', true)
+
+              $.each(result.resrent, function(k, listre) {
+                if (listre.namebook != item.namebook) return
+                else {
+                  if (listre.namebook == item.namebook && listre.vol == item.vol) {
+                    $('#listbook tr:last').addClass('success')
+                    $('#listbook tr:last td:last button').prop('disabled', true)
+                  }
+                }
+              })
+            })
+          },
+          error: (result) => {
+            if ($('#searchbk').css('display') == 'none') $('#searchbk').toggle('blind', 50)
+            $('#searchbk').text(result.responseJSON.msg)
+          },
+          complete: () => {
+            $this.removeClass('loading')
+          }
+        })
+      }      
+    }
+
+    const lendbook = (e) => {      
+      let $this = $(e.target)
+      let tagName = $this.prop('tagName')
+      if (tagName == 'I') $this = $this.closest('button')
+
+      let val = $this.val().split('&')
+      let cou = $('.badge').text()
+      let stock = $this.closest('td').prev().text()
+
+      for (let i = 0; i < val.length; i++) {
+        val[i] = val[i].substring(val[i].indexOf('=') + 1)
+      }
+
+      let data = {
+        id: $('#idshow').text(),
+        fullname: $('#fullnameshow').text(),
+        namebook: $('#namebookshow').text(),
+        vol: val[0],
+        lend: val[1],
+        stock: stock,
+        rentcount: (Number(val[3]) + 1)
+      }
+
+      cou++
+      data.stock--
+      rent.push(data)
+          
+      $('.badge').text(cou)
+      $this.closest('td').prev().text(data.stock)
+      $this.closest('td').closest('tr').addClass('success')
+      $this.prop('disabled', true)
+    }
+
+    const delbook = (e) => {
+      let $this = $(e.target)
+      let tagName = $this.prop('tagName')
+      if (tagName == 'I') $this = $this.closest('button')
+
+      let cou = $('.badge').text()      
+      let val = $this.val().split('&')
+      let lend = [], total = 0
+
+      for (let i = 0; i < val.length; i++) {
+        val[i] = val[i].substring(val[i].indexOf('=') + 1)
+      }
+
+      $.each(rent, function(i, item) {
+        data = {
+          id: item.id,
+          namebook: item.namebook,
+          vol: item.vol,
+          lend: item.lend,
+          stock: item.stock,
+          rentcount: item.rentcount
+        }
+
+        if (val[0] == item.vol && val[1] == item.namebook) {
+          tr = $('#' + item.vol)
+          tr.removeClass('success')
+          tr.find('td:last').prev('td').text(item.stock + 1)
+          tr.find('td:last button').prop('disabled', false)
+
+          return
+        }
+
+        total += Number(item.lend)
+        lend.push(data)
+      })
+
+      cou--      
+      rent = lend
+
+      $('.badge').text(cou)
+      $('#total').text(total)
+      $this.closest('tr').remove()
+    }
+
+    const calclend = () => {
+      let calc = 0
+      $('input[type=checkbox]').each(function (i) {
+        if (i <= 0) return
+        if (this.checked) calc += Number(this.value)
+      })      
+      $('#totallend').text(calc)
+    }
+
+    $(() => {
+      let btncart = new btnprocess('btncart')
+      let rebook = new btnprocess('rebook')
+
+      $('input').prop('autocomplete', 'off')
+      $("#cartbook").slideUp()
+
+      $('#top').click(() => {
+        $('html').animate({ scrollTop: 0 }, 300)
+      })
+
+      $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+        let target = $(e.target).attr("href");
+        if ( target == '#hire') $('#searchbook').focus()
+      })
+
+      $('#lendall').change(() => {
+        let $this = $('#lendall')
+        let check = $this[0].checked
+
+        if (check) $('input:checkbox').prop('checked', true)
+        else $('input:checkbox').prop('checked', false)
+        calclend()
+      })
+
+      $('#cart').on('shown.bs.modal', function () {
+        let total = 0
+        $('#cartlist tr').slice(0).remove()
+
+        $.each(rent, function(i, item) {
+          total += Number(item.lend)
+          $('#cartlist').append('<tr>')
+          $('#cartlist tr:last').append('<td>' + (i + 1))
+          $('#cartlist tr:last').append('<td>' + item.namebook + ' เล่มที่ ' + item.vol)
+          $('#cartlist tr:last').append('<td style="text-align: right;">' + item.lend)
+          $('#cartlist tr:last')
+            .append('<td class="td-center text-center"><button type="button" class="btn btn-danger" value="vol='
+            + item.vol + '&bookname=' + item.namebook + '" onclick="delbook(event)">'
+            + '<i class="glyphicon glyphicon-remove"></i></button></td>')
+        })
+
+        $('#cartlist').append('<tr class="warning" style="font-weight: bold;">')
+        $('#cartlist tr:last').append('<td>' + 'Total')
+        $('#cartlist tr:last').append('<td id="total" colspan="2" style="text-align: right;">' + total)
+        $('#cartlist tr:last').append('<td>')
+
+        $("#cartbook").slideDown(200)
+      })
+
+      $('#cart').on('hidden.bs.modal', function () {
+        $("#cartbook").slideUp()
+        $('#cartst').removeClass('alert-danger alert-success')
+        $('#cartst').css('display', 'none')
+      })
+
+      $('#btncart').click(() => {
+        let json = rent
+        rent = JSON.stringify(rent)
+
+        if (rent.length <= 2) {
+          rent = json
+          return
+        }
+
+        $.ajax({
+          url: '/rentbook',
+          type: 'post',
+          data: {rent},
+          datatype: 'json',
+          cache: false,
+          timeout: 5000,
+          beforeSend: () => {
+            btncart.loading('Processing...')
+            $('#cartst').removeClass('alert-danger alert-success')
+            if ($('#cartst').css('display') == 'block') $('#cartst').toggle('blind', 10)
+          },
+          success: (result) => {
+            rent = []
+            $('.badge').text(0)
+            $('#cartst').addClass('alert-success').text(result.msg)
+            $('#cartlist').find('tr').hide(100, function() { $('#cartlist').find('tr').remove() })
+
+            $('#returnbook tr').slice(0).remove()
+            $.each(result.listrent, function(i, item) {
+              let ledate = formatDate(new Date(item.ledate), '/')
+              let redate = formatDate(new Date(item.redate), '/')
+              let rangedate = CalcDate(item.redate)
+              let lend = item.lend * rangedate
+              $('#returnbook').append('<tr id="lend' + item.vol + '">')
+
+              $('#returnbook tr:last').append('<td>' + (i + 1))
+              $('#returnbook tr:last').append('<td>' + item.namebook)
+              $('#returnbook tr:last').append('<td>' + item.vol)
+              $('#returnbook tr:last').append('<td>' + ledate)
+              $('#returnbook tr:last').append('<td>' + redate)
+              $('#returnbook tr:last').append('<td style="text-align: right;">' + lend)
+              $('#returnbook tr:last').append('<td><input type="checkbox" onclick="calclend()" value="' + lend + '"></td>')
+            })
+
+            $('#returnbook').append('<tr style="font-weight: bold;" class="warning">')
+            $('#returnbook tr:last').append('<td>Total')
+            $('#returnbook tr:last').append('<td colspan="5" id="totallend" style="text-align: right;">0')
+            $('#returnbook tr:last').append('<td>')
+          },
+          error: (result) => {
+            rent = json
+            btncart.reset()
+            $('#cartst').addClass('alert-danger').text(result.responseJSON.msg)
+          },
+          complete: (result) => {
+            btncart.reset()
+            if ($('#cartst').css('display') == 'none') $('#cartst').toggle('blind', 50)
+          }
+        })
+      })
+
+      $('#rebook').click((e) => {
+        let checked = false
+
+        $('input:checkbox').each(function() {
+            checked = $(this)[0].checked
+            if (checked) return false            
+        })
+        
+        if (!checked) return
+        else {
+          let ret = []
+          $('input[type=checkbox]').each(function (i) {
+            if (i == 0) return
+
+            let $this = $(this)
+            if (this.checked) {
+              let data = {
+                id: $('#idshow').text(),
+                fullname: $('#fullnameshow').text(),
+                namebook: $this.closest('tr').find('td:nth-child(2)').text(),
+                vol: $this.closest('tr').find('td:nth-child(3)').text()
+              }
+
+              ret.push(data)
+              $this.val(0)
+              $this.closest('tr').hide(100, function() { $this.closest('tr').remove() })
+            }
+          })
+          calclend()
+          ret = JSON.stringify(ret)
+          
+          $.ajax({
+            url: '/rebook',
+            type: 'post',
+            data: {ret},
+            datatype: 'json',
+            cache: false,
+            timeout: 5000,
+            beforeSend: () => {
+              rebook.loading('Processing...')
+              $('#rebookst').removeClass('alert-danger alert-success')
+              if ($('#rebookst').css('display') == 'block') $('#rebookst').toggle('blind', 10)
+            },
+            success: (result) => {
+              $('#rebookst').addClass('alert-success').text(result.msg)
+              SearchBK()
+            },
+            error: (result) => {
+              rebook.reset()
+              $('#rebookst').addClass('alert-danger').text(result.responseJSON.msg)
+            },
+            complete: (result) => {
+              rebook.reset()
+              if ($('#rebookst').css('display') == 'none') $('#rebookst').toggle('blind', 50)
+            }
+          })
+        }
+      })
+    })

@@ -1,0 +1,247 @@
+extends layout
+block content
+  div(style="margin-top: 15px").panel.panel-success
+    div.panel-heading.text-center
+      h4 สมัครสมาชิก
+    div.panel-body
+      form.form-horizontal
+        div.form-group
+          label(for="fullname").col-md-3.control-label ชื่อ-นามสกุล :
+          div.col-md-4
+            div.input-group
+              span.input-group-addon
+                i.glyphicon.glyphicon-user
+              input(type="text" id="fullname" name="fullname" placeholder="ชื่อ-นามสกุล" autofocus).form-control.text
+
+        div.form-group
+          label(for="idcard").col-md-3.control-label รหัสบัตรประชาชน :
+          div.col-md-3
+            div.input-group
+              span.input-group-addon
+                i.fas.fa-id-card
+              input(type="text" id="idcard" name="idcard" placeholder="รหัสบัตรประชาชน" oninput="NumberOnly(this)").form-control.number
+
+        div.form-group
+          label(for="mobiletel").col-md-3.control-label เบอร์โทรศัพท์ :
+          div.fg.col-md-3
+            div.input-group
+              span.input-group-addon
+                i.fas.fa-phone
+              input(type="text" id="mobiletel" name="mobiletel" placeholder="เบอร์โทรศัพท์" oninput="NumberOnly(this)").form-control.number
+          label(for="sex").col-md-1.control-label เพศ :
+          div(style="display: inline-flex;").col-md-2
+            label.radio-inline
+              input(type="radio" name="sex" value="ชาย" checked)
+              |ชาย
+            label.radio-inline
+              input(type="radio" name="sex" value="หญิง")
+              |หญิง
+
+        div.form-group
+          label(for="email").col-md-3.control-label E-mail :
+          div.col-md-4
+            div.input-group
+              span.input-group-addon
+                i.glyphicon.glyphicon-envelope
+              input(type="email" id="email" name="email" placeholder="E-mail").form-control
+
+        div.form-group
+          label(for="birthday").col-md-3.control-label วันเกิด (ค.ศ.) :
+          div.fg.col-md-3
+            div.input-group
+              span.input-group-addon
+                i.fas.fa-birthday-cake
+              input(type="date" id="birthday" name="birthday" placeholder="วันเกิด").form-control.text
+          label(for="age").col-md-1.control-label อายุ :
+          div.col-md-2
+            div.input-group
+              span.f-bold.input-group-addon A
+              input(type="text" id="age" name="age" placeholder="อายุ" oninput="NumberOnly(this)").form-control.number
+
+        div.form-group
+          label(for="address").col-md-3.control-label ที่อยู่ :
+          div.col-md-6
+            div.input-group
+              span.input-group-addon
+                i.fas.fa-home
+              input(type="text" id="address" name="address" placeholder="ที่อยู่").form-control.text
+
+        div.form-group
+          label(for="subarea").col-md-3.control-label แขวง / ตำบล :
+          div.col-md-5
+            input(type="text" id="subarea" name="subarea" placeholder="แขวง / ตำบล").form-control.text
+
+        div.form-group
+          label(for="area").col-md-3.control-label เขต / อำเภอ :
+          div.col-md-5
+            input(type="text" id="area" name="area" placeholder="เขต / อำเภอ").form-control.text
+
+        div.form-group
+          label(for="province").col-md-3.control-label จังหวัด :
+          div.col-md-5
+            input(type="text" id="province" name="province" placeholder="จังหวัด").form-control.text
+
+        div.form-group
+          label(for="zipcode").col-md-3.control-label รหัสไปรษณีย์ :
+          div.col-md-5
+            input(type="text" id="zipcode" name="zipcode" placeholder="รหัสไปรษณีย์" oninput="NumberOnly(this)").form-control.number
+
+        div.form-group
+          div.col-md-6.col-md-offset-3
+            div(id="status" role="alert" style="display: none").alert
+            
+        div.form-group
+          div.col-md-3.col-md-offset-3
+            button(type="button" id="btnregis" name="btnregis").btn.btn-success
+              span Submit
+  script.
+    JSZipUtils.getBinaryContent('/jsons/subdistrict.zip', (err, data) => {
+      if (err) throw err
+      JSZip.loadAsync(data).then((zip) => {
+        zip.file('subdistrict.json').async('string').then((json) => {
+          const options = {
+            data: JSON.parse(json),
+            getValue: 'name',
+            list: {
+              maxNumberOfElements: 10,
+              match: {
+                enabled: true
+              },
+              onSelectItemEvent: function() {
+                let address, $this
+                $('.easy-autocomplete').each(function() {
+                  $this = $(this).find('input')
+                  address = $this.val().split(', ')
+
+                  if (address.length == 4) {
+                    $('#subarea').val(address[0])
+                    $('#area').val(address[1])
+                    $('#province').val(address[2])
+                    $('#zipcode').val(address[3])
+                    return
+                  }
+                })
+              },
+              onChooseEvent: function() {
+                let address, $this
+                $('.easy-autocomplete').each(function() {
+                  $this = $(this).find('input')
+                  address = $this.val().split(', ')
+
+                  if (address.length == 4) {
+                    $('#subarea').val(address[0]).closest('div').removeClass('has-error')
+                    $('#area').val(address[1]).closest('div').removeClass('has-error')
+                    $('#province').val(address[2]).closest('div').removeClass('has-error')
+                    $('#zipcode').val(address[3]).closest('div').removeClass('has-error')
+                    return
+                  }                  
+                })
+              }              
+            }
+          }          
+          $('#subarea').easyAutocomplete(options)
+          $('#area').easyAutocomplete(options)
+          $('#province').easyAutocomplete(options)
+          $('#zipcode').easyAutocomplete(options)
+        })
+      })
+    })
+
+    $(() => {
+      /*
+      $('#fullname').val('test')
+      $('#idcard').val('1234567891234')
+      $('#mobiletel').val('0862507512')
+      $('#email').val('test@g.com')
+      $('#birthday').val('1991-11-11')
+      $('#age').val('26')
+      $('#address').val('567')
+      $('#subarea').val('คลองมหานาค')
+      $('#area').val('ป้อมปราบศัตรูพ่าย')
+      $('#province').val('กรุงเทพมหานคร')
+      $('#zipcode').val('10100')
+      */
+
+      let btn = new btnprocess('btnregis')
+      let valid = new validation()
+      $('input').prop('autocomplete', 'off')
+      
+      $('#email').on('keyup blur', (e) => { valid.email(false, e.target.id) })
+      $('.text').on('keyup blur', (e) => { valid.text(false, e.target.id) })
+      $('.number').on('keyup blur', (e) => {
+        switch (e.target.id) {
+          case 'idcard':
+            valid.idcard(false, e.target.id)
+            break
+          case 'mobiletel':
+            valid.mobiletel(false, e.target.id)
+            break
+          case 'age':
+            valid.age(false, e.target.id)
+            break
+          case 'zipcode':
+            valid.zipcode(false, e.target.id)
+            break
+        }
+      })
+
+      $('#birthday').on('keyup blur', (e) => {
+        let date = new Date(e.target.value)
+        $('#age').val(Calcage(date))
+        valid.age('age')
+      })
+      $('form').keypress((e) => { if (e.which == 13) $('#btnregis').click() })
+         
+      $('#btnregis').click(() => {
+        let err = false
+
+        err = valid.text(err, 'email')
+        $('.text').each(function() {
+          err = valid.text(err, this.id)
+        })
+
+        $('.number').each(function() {
+          switch (this.id) {
+            case 'idcard':
+              err = valid.idcard(err, this.id)
+              break
+            case 'mobiletel':
+              err = valid.mobiletel(err, this.id)
+              break
+            case 'age':
+              err = valid.age(err, this.id)
+              break
+            case 'zipcode':
+              err = valid.zipcode(err, this.id)
+              break
+          }
+        })
+
+        if (err) FocusError()
+        else {
+          $.ajax({
+            url: '/register',
+            type: 'post',
+            data: $('form').serializeJSON(),
+            dataType: 'json',
+            cache: false,
+            timeout: 5000,
+            beforeSend: () => {
+              btn.loading('Processing...')
+              $('#status').removeClass('alert-danger alert-success')
+              if ($('#status').css('display') == 'block') $('#status').toggle('blind', 50)
+            },
+            success: (result) => {
+              $('#status').addClass('alert-success').text(result.msg)
+            },
+            error: (result) => {
+              $('#status').addClass('alert-danger').text(result.responseJSON.msg)
+            },
+            complete: () => {
+              btn.reset()
+              if ($('#status').css('display') == 'none') $('#status').toggle('blind', 50)
+            }
+          })
+        }
+      })
+    })

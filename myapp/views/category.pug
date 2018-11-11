@@ -1,0 +1,157 @@
+extends layout
+block content
+  div(style="padding-top: 15px; background-color: #333;")
+    ul(style="margin-left: 18px; margin-right: 15px;").nav.navbar
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=0").btn.btn-success #
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=a").btn.btn-success A
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=b").btn.btn-success B
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=c").btn.btn-success C
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=d").btn.btn-success D
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=e").btn.btn-success E
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=f").btn.btn-success F
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=g").btn.btn-success G
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=h").btn.btn-success H
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=i").btn.btn-success I
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=j").btn.btn-success J
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=k").btn.btn-success K
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=l").btn.btn-success L
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=m").btn.btn-success M
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=n").btn.btn-success N
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=o").btn.btn-success O
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=p").btn.btn-success P
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=q").btn.btn-success Q
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=r").btn.btn-success R
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=s").btn.btn-success S
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=t").btn.btn-success T
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=u").btn.btn-success U
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=v").btn.btn-success V
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=w").btn.btn-success W
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=x").btn.btn-success X
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=y").btn.btn-success Y
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=z").btn.btn-success Z
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=th").btn.btn-success ก - ฮ
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=not").btn.btn-success ยังไม่จบ
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=end").btn.btn-success จบแล้ว
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=new").btn.btn-success มาใหม่
+      div.cate.col-xs-2.col-sm-2.col-md-1.col-lg-1
+        a(href="/category?search=best").btn.btn-success ยอดนิยม
+
+  div.heading
+    div.icon-head
+      i.fas.fa-book
+    span(id="headbook") List 
+
+  div.row
+    each book in data
+      div.col-xs-6.col-md-3
+        div.thumbnail
+          div(id= book.namebook).img-box
+            img(alt="Image" src= book.pathimg).img-responsive.zoom-in
+            span.caption-text= book.namebook
+
+  #showbook(tabindex="-1" role="dialog").modal.fade
+    div(role="document").modal-dialog.modal-lg
+      div.modal-content
+        div.modal-header
+          button(type="button" data-dismiss="modal" aria-label="Close").close
+            span(aria-hidden="true") &times;
+          h4.modal-title List Vol.
+        div.modal-body
+          div.col-md-12
+          div.panel.panel-primary
+            div.panel-body
+              table(id="listbook" style="width: 100%").table.table-striped.table-bordered
+                thead
+                  tr
+                    th เล่มที่
+                    th ชื่อหนังสือ
+                    th ราคาเช่า
+                    th จำนวน
+                tbody.tb-middle
+
+  script.
+    const Search = (namebook) => {    
+      let $this = namebook
+      if ($this == '') return
+      else {
+        $.ajax({
+          url: '/searchallbook',
+          type: 'get',
+          data: { searchbook: namebook },
+          datatype: 'json',
+          cache: false,
+          timeout: 5000,
+          success: (result) => {
+            $('tbody tr').slice(0).remove()
+            
+            $.each(result.allbook, function(i, item) {
+              let lend = Math.floor(item.price / 10)
+
+              $('tbody').append('<tr>')
+              $('tbody tr:last').append('<td>' + item.vol)
+              $('tbody tr:last').append('<td>' + item.namebook)
+              $('tbody tr:last').append('<td>' + lend)
+              $('tbody tr:last').append('<td>' + item.stock)
+            })
+          },
+          error: (result) => {
+            $('#showbook').modal('hide')
+          }
+        })
+      }      
+    }
+
+    $(() => {
+      $('a[href="' + location.pathname + location.search + '"]').addClass('active')
+
+      var search = UrlParameter('search')
+      if (search != 'undefined') {
+        
+        let list = $('#headbook').text()
+        if (search == 0) $('#headbook').text(list + '#')
+        else if (search == 'th') $('#headbook').text(list + 'ก-ฮ')
+        else if (search == 'not') $('#headbook').text(list + 'ยังไม่จบ')
+        else if (search == 'end') $('#headbook').text(list + 'จบแล้ว')
+        else if (search == 'new') $('#headbook').text(list + 'มาใหม่')
+        else if (search == 'best') $('#headbook').text(list + 'ยอดนิยม')
+        else $('#headbook').text(list + search.toUpperCase())
+      }
+
+      $('.img-box').click((e) => {
+        let namebook = e.currentTarget.id
+
+        $('#showbook').modal('show')
+        Search(namebook)
+      })
+    })

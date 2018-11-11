@@ -1,0 +1,154 @@
+doctype html
+html
+  head(lang="th")
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scal=1.0")
+    title= title
+    link(rel="stylesheet", href="/fonts/css/fontawesome-all.css")
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    script(src="/javascripts/jquery.js")
+    script(src="/javascripts/jquery-ui.js")
+    script(src="/javascripts/style.js")
+  body
+    div.form-login
+      div.content
+        div.heading
+          span Log In to your Account
+        form(method="post")
+          div.body
+            div.group
+              input(type="text" id="username" name="username" autofocus)
+              span.bar-input
+              label(for="username")
+                i.fa.fa-user
+                span Username
+            div.group
+              input(type="password" id="password" name="password")
+              span.bar-input
+              label(for="password")
+                i.fa.fa-key
+                span Password
+          div.footer
+            input(type="checkbox" id="remember" name="remember")
+            label(for="remember")
+              span.span-box
+              span Remember
+          
+          div.submit
+            div(id="status" style="margin:0 0 25px 0;").text-center.alert
+            button(type="button" id="login" name="login").btn.btn-login
+              span Log In
+
+  script.
+    let loadtext = ''
+
+    const valid = {
+      text: (err, id) => {
+        let $this = $('#' + id)
+        let hclass = $this.closest('div').next('div').hasClass('text-left')
+        let label = $('label[for="'+ id +'"]')
+        let iderr = id + '_error'
+        let msgerr = 'กรุณากรอก ' + label.text() + ' ค่ะ'
+
+        if($this.val() == '') {
+          if (hclass == false) {
+            $this.next().addClass('bar-error')
+            $this.nextAll('label').addClass('used-error')
+            $this.closest('div').after('<div id="' + iderr + '"class="alert alert-error text-left">' + msgerr + '</div>')
+
+            $('#' + iderr).toggle('blind', 100)
+          }
+          err = true
+        } else {
+          if (hclass) {
+            $('#' + iderr).toggle('blind', 100)
+            $this.next().removeClass('bar-error')
+            $this.nextAll('label').removeClass('used-error')
+            
+            setTimeout(() => {
+              $('#' + iderr).remove()
+              $('.ui-effects-placeholder').remove()
+            }, 90)
+          }
+        }
+        return err
+      }
+    }
+
+    const focuserr = () => {
+      let $this = $('form').find('.bar-error').prev()[0].id
+      $('#' + $this).focus()
+    }
+
+    const btn = {
+      loading: (id, val) => {
+        $this = $('#' + id);    
+        loadtext = $this.find('span').text();    
+        
+        $this.prop('disabled', true); 
+        $this.append('<i class="fa fa-spinner fa-spin fa-fw"></i>')    
+        $this.find('span').text(val);    
+      },
+      reset: (id) => {
+        $this = $('#' + id);  
+          
+        $this.prop('disabled', false); 
+        $this.find('span').text(loadtext);  
+        $this.find('i').remove();   
+      }
+    }
+
+    $(() => {
+      $('input').prop('autocomplete', 'off')
+      $('input').blur(function() {
+        let $this = $(this)
+                  
+        if ($this.prop('type') == 'checkbox') return
+        if ($this.val()) $this.addClass('used')
+        else $this.removeClass('used')
+      })
+
+      $('input').keyup((e) => { valid.text(false, e.target.id) })
+
+      $('form').keypress((e) => { if (e.which == 13) { $('button').click() } })
+      $('button').click(() => {        
+        if ($('button').prop('disabled')) return
+
+        let err = false
+        err = valid.text(err, 'username')
+        err = valid.text(err, 'password')
+                
+        if (err) focuserr()
+        else {          
+          $.ajax({
+            url: '/',
+            type: 'post',
+            data: $('form').serialize(),
+            dataType: 'json',
+            cache: false,
+            timeout: 5000,
+            beforeSend: () => {
+              btn.loading('login', 'Proccessing...')
+              $('#status').removeClass('alert-error alert-success')
+              if ($('#status').css('display') == 'block') $('#status').toggle('blind',100)
+            },
+            success: (result) => {
+              $('#status').addClass('alert-success').text(result.msg)   
+              window.location = '/index'           
+            },
+            error: (result) => {
+              $('#username').focus()
+              $('#status').addClass('alert-error').text(result.responseJSON.msg)                
+            },
+            complete: () => { 
+              btn.reset('login') 
+              if ($('#status').css('display') == 'none') $('#status').toggle('blind',100)
+            }
+          })
+        }
+      })
+    })
+
+  
+  

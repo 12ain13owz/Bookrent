@@ -1,0 +1,320 @@
+extends layout
+block content
+  div.form-horizontal
+    div.form-group
+      div.col-md-12
+        h3 Search Book
+          button(type="button" id="listplus" style="margin-left: 10px" data-toggle="modal" data-target="#addlistbook").btn.btn-success
+            i.ic.glyphicon.glyphicon-plus
+            |เพิ่มรายการหนังสือ
+          a(href="/editbook").btn.btn-warning.pull-right
+            i.ic.glyphicon.glyphicon-pencil
+            |แก้ไขหนังสือ
+        div.inner-addon.right-addon
+          i.glyphicon.glyphicon-search
+          input(type="text" id="searchbook" name="searchbook" onkeyup="Search(event)").form-control
+
+    div.form-group
+      div.col-md-12
+        div(id="searchst" role="alert" style="display: none").alert.alert-danger
+      
+  #formbook(style="margin-top: 15px; display: none;")
+    div.row
+      div.col-md-5.col-md-offset-2
+        div.thumbnail
+          img(id ="imageshow" alt="Image" src="/images/no-image.png" style="width: 100%; height: 500px").img-responsive
+    
+      div.col-sm-4
+        div.well
+          p รหัส : 
+            span(id="idbookshow" style="color:blue")
+        div.well
+          p ชื่อหนังสือ : 
+            span(id="namebookshow" style="color:blue")
+          p ผู้เขียน : 
+            span(id="authorshow" style="color:blue")
+          p สำนักพิมพ์ : 
+            span(id="publishershow" style="color:blue")
+          p เล่มล่าสุด : 
+            span(id="volshow" style="color:blue")
+
+    div.panel.panel-primary
+      div.panel-heading.text-center
+        h4 เพิ่มหนังสือ
+      div.panel-body
+        form(id="addbook" method="post" action="/addbook" enctype='multipart/form-data').form-horizontal
+          div.form-group
+            label(for="vol").col-md-2.control-label เล่มที่ :
+            div.col-md-2
+              input(type="text" id="vol" name="vol" placeholder="เล่มที่" oninput="NumberOnly(this)" maxlength="3").form-control.text
+
+          div.form-group
+            label(for="price").col-md-2.control-label ราคา :
+            div.col-md-2
+              input(type="text" id="price" name="price" placeholder="ราคา" oninput="Decimal(this)" maxlength="6").form-control.text
+
+          div.form-group
+            label(for="stock").col-md-2.control-label จำนวนเล่ม :
+            div.col-md-2
+              input(type="text" id="stock" name="stock" placeholder="จำนวนเล่ม" oninput="NumberOnly(this)" maxlength="4").form-control.text
+
+          div.form-group
+            label.col-md-2.control-label รูปหน้าปก :
+            div.col-md-8
+              div.input-group
+                label.input-group-btn
+                  span.btn.btn-primary Browse &hellip;
+                    input(type="file" id="image" name="image"  accept="image/gif, image/jpeg, image/png" style="display: none;")
+                input(type="text" id="filename" name="filename" readonly).form-control
+
+          div.form-group
+            div.col-md-8.col-md-offset-2
+              div(id="addbookst" role="alert" style="display: none").alert.alert-danger
+            
+          div.form-group
+            div.col-md-2.col-md-offset-2
+              button(type="button" id="btnaddbook" name="btnaddbook").btn.btn-success
+                span Submit
+
+  #addlistbook(tabindex="-1" role="dialog").modal.fade
+    div(role="document").modal-dialog.modal-lg
+      div.modal-content
+        div.modal-header
+          button(type="button" data-dismiss="modal" aria-label="Close").close
+            span(aria-hidden="true") &times;
+          h4.modal-title เพิ่มรายการหนังสือ
+        div.modal-body
+          div.panel.panel-default
+            div.panel-body
+              form(id="booklist").form-horizontal
+                div.form-group
+                  label(for="namebook").col-md-2.control-label ชื่อหนังสือ :
+                  div.col-md-9
+                    div.input-group
+                      span.input-group-addon
+                        i.fas.fa-book
+                      input(type="text" id="namebook" name="namebook" placeholder="ชื่อหนังสือ").form-control.text
+
+                div.form-group
+                  label(for="author").col-md-2.control-label ผู้เขียน :
+                  div.col-md-9
+                    div.input-group
+                      span.input-group-addon
+                        i.glyphicon.glyphicon-user
+                      input(type="text" id="author" name="author" placeholder="ผู้เขียน").form-control.text
+
+                div.form-group
+                  label(for="publisher").col-md-2.control-label สำนักพิมพ์ :
+                  div.col-md-9
+                    input(type="text" id="publisher" name="publisher" placeholder="สำนักพิมพ์").form-control.text
+
+                div.form-group
+                  div.col-md-9.col-md-offset-2
+                    div(id="status" role="alert" style="display: none").alert
+
+                div.form-group
+                  div.col-md-2.col-md-offset-2
+                    button(type="button" id="btnbook" name="btnbook").btn.btn-success
+                      span Submit
+                              
+  script.
+    $.getJSON('/jsons/searchbook.json', function(rows) {
+      let searchbook = {
+        data: rows,       
+        getValue: 'name',
+        list: {
+          maxNumberOfElements: 20,
+          match: { enabled: true },
+          onChooseEvent: () => { $('#searchbook').focus() }
+        }
+      }
+      $("#searchbook").easyAutocomplete(searchbook)
+      $('#searchbook').focus()
+    })
+
+    $.getJSON('/jsons/publisher.json', function(rows) {
+      let publisher = {
+        data: rows,       
+        getValue: 'name',
+        list: {
+          maxNumberOfElements: 10,
+          match: { enabled: true },
+          onChooseEvent: () => { $('#publisher').focus() }
+        }
+      }
+      $("#publisher").easyAutocomplete(publisher)   
+    })
+
+    const Search = (e) => {    
+      if (e.which == 13) {
+        let $this = $('#searchbook')
+        if ($this.val().trim() == '') return
+        else {
+          $.ajax({
+            url: '/searchbook',
+            type: 'get',
+            data: { searchbook: $('#searchbook').val()},
+            datatype: 'json',
+            cache: false,
+            timeout: 5000,
+            beforeSend: () => {
+              $this.addClass('loading')
+              $('#formbook').fadeOut(100)
+              if ($('#searchst').css('display') == 'block') $('#searchst').toggle('blind', 10)
+            },
+            success: (result) => {
+              if ($('#formbook').css('display') == 'none') $('#formbook').show(100)
+              $('#formbook').fadeIn(100)
+              $('#idbookshow').text(result.data.id)
+              $('#namebookshow').text(result.data.namebook)
+              $('#authorshow').text(result.data.author)
+              $('#publishershow').text(result.data.publisher)
+              $('#volshow').text(result.data.vol)
+              $('#imageshow').prop('src', result.data.pathimg)
+
+              $('#vol').val('')
+              $('#price').val('')
+              $('#stock').val('')
+              $('#filename').val('')
+              $('#image').val('')
+            },                    
+            error: (result) => {              
+              if ($('#searchst').css('display') == 'none') $('#searchst').toggle('blind', 50)
+              $('#searchst').text(result.responseJSON.msg)              
+            },
+            complete: () => {
+              $this.removeClass('loading')
+            }
+          })
+        }
+      }          
+    }
+    
+    $(() => {
+      let valid = new validation()
+      let btnbook = new btnprocess('btnbook')
+      $('input').prop('autocomplete', 'off')
+      $('#addlistbook').on('shown.bs.modal', function () { $('#namebook').focus() })
+
+      $('input:file').change((e) => {
+        $('#filename').val(e.target.value.replace(/\\/g, '/').replace(/.*\//, ''))                
+      })      
+
+      $('#booklist input').on('keyup blur', (e) => { valid.text(false, e.target.id) })
+      $('#booklist').keypress((e) => { if (e.which == 13) $('#btnbook').click() })
+
+      $('#addbook .text').on('keyup blur', (e) => { valid.text(false, e.target.id) })
+      $('#addbook').keypress((e) => { if (e.which == 13) $('#btnaddbook').click() })
+      
+      $('#btnbook').click(() => {
+        let err = false
+
+        $('#addlistbook input').each(function() { err = valid.text(err, $(this)[0].id) })
+        if (err) FocusError()
+        else {
+          $.ajax({
+            url: '/listbook',
+            type: 'post',
+            data: $('#booklist').serializeJSON(),
+            datatype: 'json',
+            cache: false,
+            timeout: 5000,
+            beforeSend: () => {
+              btnbook.loading('Processing...')
+              $('#status').removeClass('alert-danger alert-success')
+              if ($('#status').css('display') == 'block') $('#status').toggle('blind', 10)
+            },
+            success: (result) => {              
+              $('#status').addClass('alert-success').text(result.msg)
+
+              $.getJSON('/jsons/searchbook.json', function(rows) {
+                let searchbook = {
+                  data: rows,       
+                  getValue: 'name',
+                  list: {
+                    maxNumberOfElements: 20,
+                    match: { enabled: true },
+                    onChooseEvent: () => { $('#searchbook').focus() }
+                  }
+                }
+                $("#searchbook").easyAutocomplete(searchbook)   
+              })
+                                                    
+              $.getJSON('/jsons/publisher.json', function(rows) {
+                let publisher = {
+                  data: rows,       
+                  getValue: 'name',
+                  list: {
+                    maxNumberOfElements: 10,
+                    match: { enabled: true },
+                    onChooseEvent: () => { $('#publisher').focus() }
+                  }
+                }
+                $("#publisher").easyAutocomplete(publisher)   
+              })
+                                    
+              setTimeout(function() {
+                $('#status').removeClass('alert-success')
+                if ($('#status').css('display') == 'block') $('#status').toggle('blind', 50)
+              }, 2000)
+
+              $('#namebook').val('')
+            },
+            error: (result) => {              
+              $('#status').addClass('alert-danger').text(result.responseJSON.msg)
+            },
+            complete: () => {              
+              btnbook.reset()
+              $('#namebook').focus()              
+              if ($('#status').css('display') == 'none') $('#status').toggle('blind', 50)
+            }
+          })
+        }        
+      })
+
+      $('#btnaddbook').click(() => {
+        let err = false
+
+        $('#addbook .text').each(function() { err = valid.text(err, $(this)[0].id) })
+        if (err) FocusError()
+        else {
+          let data = new FormData()
+        
+          data.append('id', $('#idbookshow').text())
+          data.append('namebook', $('#namebookshow').text())
+          data.append('vol', $('#vol').val())
+          data.append('price', $('#price').val())
+          data.append('stock', $('#stock').val())
+          if ($('#image').get(0).files[0] != undefined) data.append('image', $('#image').get(0).files[0])
+
+          $.ajax({
+            url: '/addbook',
+            type: 'post',
+            data: data,
+            cache: false,
+            timeout: 5000,
+            contentType: false,
+            processData: false,
+            beforeSend: () => {
+              if ($('#addbookst').css('display') == 'block') $('#addbookst').toggle('blind', 10)
+            },
+            success: (result) => {
+              $('.thumbnail').animate({opacity: .1}, 100)
+              $('#volshow').text(result.data.vol)
+              $('#imageshow').prop('src', result.data.pathimg)
+                
+              setTimeout(function() {
+                $('.thumbnail').animate({opacity: 1}, 100)
+              }, 100)
+                        
+              let i = Number(result.data.vol) + 1
+              $('#vol').val(i)
+            },
+            error: (result) => {
+              if ($('#addbookst').css('display') == 'none') $('#addbookst').toggle('blind', 50)
+              $('#addbookst').text(result.responseJSON.msg)              
+            },            
+          })
+        }
+      })
+    })

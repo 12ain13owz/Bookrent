@@ -1,0 +1,189 @@
+extends layout
+block content
+  button(type="button" id="listplus" style="margin-top: 15px" data-toggle="modal" data-target="#changepass").btn.btn-success
+    |Change Password
+  div(style="margin-top: 15px").panel.panel-primary
+    div.panel-heading.text-center
+      h4 Register Account
+    div.panel-body
+      form(id="regisacc").form-horizontal
+        div.form-group
+          label(for="username").col-md-3.control-label Username :
+          div.col-md-3
+            div.input-group
+              span.input-group-addon
+                i.glyphicon.glyphicon-user
+              input(type="text" id="username" name="username" placeholder="Username" oninput="AZOnly(this)" autofocus).form-control.text
+      
+        div.form-group
+          label(for="password").col-md-3.control-label Password :
+          div.col-md-3
+            div.input-group
+              span.input-group-addon
+                i.fas.fa-key
+              input(type="password" id="password" name="password" placeholder="Password").form-control.text
+
+        div.form-group
+          label(for="confirmpass").col-md-3.control-label Comfirm Password :
+          div.col-md-3
+            div.input-group
+              span.input-group-addon
+                i.fas.fa-key
+              input(type="password" id="confirmpass" name="confirmpass" placeholder="Comfirm Password").form-control.text
+        
+        div.form-group
+          div.col-md-9.col-md-offset-3
+            div(id="status" role="alert" style="display: none").alert
+
+        div.form-group
+          div.col-md-2.col-md-offset-3
+            button(type="button" id="btnregis" name="btnregis").btn.btn-success
+              span Submit
+
+  #changepass(tabindex="-1" role="dialog").modal.fade
+    div(role="document").modal-dialog.modal-lg
+      div.modal-content
+        div.modal-header
+          button(type="button" data-dismiss="modal" aria-label="Close").close
+            span(aria-hidden="true") &times;
+          h4.modal-title Change Password
+        div.modal-body
+          div.panel.panel-info    
+            div.panel-body
+              form(id="changeacc").form-horizontal
+                div.form-group
+                    label(for="id").col-md-3.control-label ID :
+                    div.col-md-2
+                      input(type="text" id="id" name="id" tabindex="-1" value= layout.sess.id readonly).form-control
+
+                div.form-group
+                  label(for="user").col-md-3.control-label Username :
+                  div.col-md-3
+                    div.input-group
+                      span.input-group-addon
+                        i.glyphicon.glyphicon-user
+                      input(type="text" id="user" name="user" tabindex="-1" value= layout.sess.username readonly).form-control
+              
+                div.form-group
+                  label(for="newpass").col-md-3.control-label New Password :
+                  div.col-md-4
+                    div.input-group
+                      span.input-group-addon
+                        i.fas.fa-key
+                      input(type="password" id="newpass" name="newpass" placeholder="New Password").form-control.text
+
+                div.form-group
+                  label(for="conpass").col-md-3.control-label Comfirm Password :
+                  div.col-md-4
+                    div.input-group
+                      span.input-group-addon
+                        i.fas.fa-key
+                      input(type="password" id="conpass" name="conpass" placeholder="Comfirm Password").form-control.text
+                
+                div.form-group
+                  div.col-md-9.col-md-offset-3
+                    div(id="statusch" role="alert" style="display: none").alert
+
+                div.form-group
+                  div.col-md-2.col-md-offset-3
+                    button(type="button" id="btnpass" name="btnpass").btn.btn-success
+                      span Change Password
+                                    
+  script.
+    $(() => {
+      let btn = new btnprocess('btnregis')
+      let valid = new validation()
+      $('input').prop('autocomplete', 'off')
+
+      $('.text').on('keyup blur', (e) => { valid.text(false, e.target.id) })
+      
+      $('#regisacc').keypress((e) => { if (e.which == 13) $('#btnregis').click() })
+      $('#btnregis').click(() => {
+        let err = false
+        let pass = $('#password').val()
+        let conp = $('#confirmpass').val()
+       
+        $('#regisacc .text').each(function() {
+          err = valid.text(err, this.id)
+        })
+
+        if (pass != conp) {
+          err = true
+          if ($('#status').css('display') == 'none') $('#status').toggle('blind', 50)
+          $('#status').addClass('alert-danger').text('Password ไม่ตรง กรุณาตรวจสอบ')
+        }         
+
+        if (err) FocusError()
+        else {
+          $.ajax({
+            url: '/regisacc',
+            type: 'post',
+            data: $('#regisacc').serializeJSON(),
+            dataType: 'json',
+            cache: false,
+            timeout: 5000,
+            beforeSend: () => {
+              btn.loading('Processing...')
+              $('#status').removeClass('alert-danger alert-success')
+              if ($('#status').css('display') == 'block') $('#status').toggle('blind', 50)
+            },
+            success: (result) => {
+              $('#status').addClass('alert-success').text(result.msg)
+            },
+            error: (result) => {
+              $('#status').addClass('alert-danger').text(result.responseJSON.msg)
+            },
+            complete: () => {
+              btn.reset()
+              if ($('#status').css('display') == 'none') $('#status').toggle('blind', 50)
+            }
+          })
+        }
+      })
+
+      $('#changepass').on('shown.bs.modal', function () { $('#newpass').focus() })
+      $('#changeacc').keypress((e) => { if (e.which == 13) $('#btnpass').click() })
+      $('#btnpass').click(() => {        
+        let err = false
+        let pass = $('#newpass').val()
+        let conp = $('#conpass').val()
+       
+        $('#changeacc .text').each(function() {
+          err = valid.text(err, this.id)
+        })
+
+        if (pass != conp) {
+          err = true
+          if ($('#statusch').css('display') == 'none') $('#statusch').toggle('blind', 50)
+          $('#statusch').addClass('alert-danger').text('Password ไม่ตรง กรุณาตรวจสอบ')
+        }         
+
+        if (err) FocusError()
+        else {
+          
+          $.ajax({
+            url: '/changepass',
+            type: 'post',
+            data: $('#changeacc').serializeJSON(),
+            dataType: 'json',
+            cache: false,
+            timeout: 5000,
+            beforeSend: () => {
+              btn.loading('Processing...')
+              $('#statusch').removeClass('alert-danger alert-success')
+              if ($('#statusch').css('display') == 'block') $('#statusch').toggle('blind', 50)
+            },
+            success: (result) => {
+              $('#statusch').addClass('alert-success').text(result.msg)
+            },
+            error: (result) => {
+              $('#statusch').addClass('alert-danger').text(result.responseJSON.msg)
+            },
+            complete: () => {
+              btn.reset()
+              if ($('#statusch').css('display') == 'none') $('#statusch').toggle('blind', 50)
+            }
+          })
+        }
+      })
+    })

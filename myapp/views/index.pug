@@ -1,0 +1,68 @@
+extends layout
+block content
+  #mycarousel(data-ride="carousel" data-interval="4000").carousel.slide
+    ol.carousel-indicators
+      li(data-target="#mycarousel" data-slide-to="0").active
+      li(data-target="#mycarousel" data-slide-to="1")
+      li(data-target="#mycarousel" data-slide-to="2")
+    div(role="listbox").carousel-inner
+      div.item.active
+        img(alt="Image" style="height: 650px; max-height: initial;" src= data.newst[0].pathimg)
+      div.item
+        img(alt="Image" style="height: 650px; max-height: initial;" src= data.popst[0].pathimg)
+      div.item
+        img(alt="Image" style="height: 650px; max-height: initial;" src= data.popst[1].pathimg)
+      a(href="#mycarousel" role="button" data-slide="prev").left.carousel-control
+        span(aria-hidden="true").glyphicon.glyphicon-chevron-left
+        span.sr-only Previous
+      a(href="#mycarousel" role="button" data-slide="next").right.carousel-control
+        span(aria-hidden="true").glyphicon.glyphicon-chevron-right
+        span.sr-only Next
+  div.heading
+    div.icon-head
+      i.fas.fa-book
+    span หนังสือมาใหม่ล่าสุด
+    button(type="button" data-toggle="collapse" data-target="#collapse1" style="padding: 12px;").btn-accordion.coll
+      i.ic.glyphicon.glyphicon-chevron-down
+  #collapse1.row.collapse.in
+    each newst in data.newst
+      div.col-xs-6.col-md-3
+        div.thumbnail
+          div.img-box
+            img(alt="Image" src= newst.pathimg).img-responsive
+            span.caption-text= newst.namebook + ' ' + newst.vol
+
+    ul(style="margin: 10px 0; padding: 0 15px;").pager
+      li.next
+        a(href="/category?search=new") More
+          span(aria-hidden="true") &nbsp;&rarr;
+  div.heading
+    div.icon-head
+      i.fab.fa-gripfire
+    span หนังสือยอดนิยม
+    button(type="button" data-toggle="collapse" data-target="#collapse2" style="padding: 12px;").btn-accordion.coll
+      i.ic.glyphicon.glyphicon-chevron-down
+  #collapse2.row.collapse.in
+    each popst in data.popst
+      div.col-xs-6.col-md-3
+        div.thumbnail
+          div.img-box
+            img(alt="Image" src= popst.pathimg).img-responsive
+            span.caption-text= popst.namebook + ' ' + popst.vol
+
+    ul(style="margin: 10px 0; padding: 0 15px;").pager
+      li.next
+        a(href="/category?search=best") More
+          span(aria-hidden="true") &nbsp;&rarr;
+            
+  script.
+    $(() => {    
+      $('button').click((e) => {
+        let $this = $(e.currentTarget)
+        let hclass = $this.hasClass('coll')
+                     
+        if (hclass) $this.removeClass('coll')
+        else $this.addClass('coll')                
+      })
+    })
+    
